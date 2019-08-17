@@ -45,6 +45,11 @@ external.tunnel.command:
 	          -o \'StrictHostKeyChecking no\' -o \'UserKnownHostsFile /dev/null\' \
 	          -L 9000:localhost:9000 -L 8084:localhost:8084 \
 		      $(GCP_PROJECT)@$$(gcloud compute instances list | grep halyard-tunnel | awk '{ printf("%s", $$5) }') >  external.tunnel.command
+
+	@echo ssh -i .container.root/.ssh/google_compute_engine \
+		  -o \'StrictHostKeyChecking no\' -o \'UserKnownHostsFile /dev/null\' \
+		      $(GCP_PROJECT)@$$(gcloud compute instances list | grep halyard-tunnel | awk '{ printf("%s", $$5) }') >  external.command
+
 	@#
 	@# Note: this ssh command should run in separate shell outside of capstan-bootstrap container
 	@#

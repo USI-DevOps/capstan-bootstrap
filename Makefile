@@ -17,7 +17,7 @@
 #    $ make < clean | superclean >
 #
 
-CONTAINER_NAME      ?= kenzan/capstan
+CONTAINER_NAME      ?= kenzan/capstan-bootstrap
 CONTAINER_VERSION   ?= $(shell cat VERSION)
 
 GIT_AUTHOR_NAME     ?= Firstname Lastname
@@ -58,6 +58,9 @@ superclean: clean.container clean.container.root
 clean: clean.container
 
 ###
+
+external.shell:
+	bash -x .container.root/external.command
 
 external.tunnel:
 	bash -x .container.root/external.tunnel.command
