@@ -59,6 +59,9 @@ clean: clean.container
 
 ###
 
+external.shell:
+	bash -x .container.root/external.command
+
 external.tunnel:
 	bash -x .container.root/external.tunnel.command
 
