@@ -65,6 +65,8 @@ bash-4.4# make debug
 bash-4.4# make cdenv
 ```
 
+Note: Before you walk away, wait for and satisfy the prompts that require you to auth gcloud and specify a billing project.
+
 ...then, finish the bootstrap process...
 
 ```
