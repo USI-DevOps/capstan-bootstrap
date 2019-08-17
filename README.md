@@ -21,7 +21,7 @@ Provides a docker container that automates setup steps described in the Getting 
 
 ```
 $ make debug
-CONTAINER_NAME       = kenzan/capstan
+CONTAINER_NAME       = kenzan/capstan-bootstrap
 CONTAINER_VERSION    = 0.0.x
 CONTAINER_ROOT       = .container.root
 GIT_AUTHOR_NAME      = Firstname Lastname
@@ -84,7 +84,8 @@ Note: Yes, we know, if hal.deploy.connect could be run successfully without hang
 Outside the container...
 
 ```
-$ make external.tunnel
+$ make external.tunnel    # ssh with port forwarding to halyard-tunnel
+$ make external.shell     # ssh without port forwarding to halyard-tunnel (use in another terminal to maintain Spinnaker)
 ```
 
 In private browsing mode...
