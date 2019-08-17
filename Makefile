@@ -17,7 +17,7 @@
 #    $ make < clean | superclean >
 #
 
-CONTAINER_NAME      ?= kenzan/capstan
+CONTAINER_NAME      ?= kenzan/capstan-bootstrap
 CONTAINER_VERSION   ?= $(shell cat VERSION)
 
 GIT_AUTHOR_NAME     ?= Firstname Lastname
