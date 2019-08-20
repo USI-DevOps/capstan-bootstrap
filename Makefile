@@ -24,7 +24,7 @@ GIT_AUTHOR_NAME     ?= Firstname Lastname
 GIT_AUTHOR_EMAIL    ?= username@domain.tld
 
 CAPSTAN_REPO        ?= https://github.com/kenzanlabs/capstan.git
-CAPSTAN_TAG         ?= master
+CAPSTAN_TAG         ?= 2019.q3.beta.gcp.m1
 
 GCP_ACCOUNT         ?= your.capstan.demo.account@gmail.com
 GCP_SERVICE_ACCOUNT ?= terraform-admin
