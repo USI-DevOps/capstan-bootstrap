@@ -229,7 +229,7 @@ gcloud.info:
 
 gcloud.zone.list:
 	if [[ ! -f gcp.zone.list ]]; then gcloud compute zones list | grep "$(GCP_ZONE)" | shuf | head -1 | tee gcp.zone.list; fi
-	if [[   -s gcp.zone.list ]]; then gcloud compute zones list | grep '^us-' | shuf | head -1 | tee gcp.zone.list; f
+	if [[   -s gcp.zone.list ]]; then gcloud compute zones list | grep '^us-' | shuf | head -1 | tee gcp.zone.list; fi
 	cat gcp.zone.list | xargs | cut -d\  -f1 | tee gcp.project.zone
 	cat gcp.zone.list | xargs | cut -d\  -f2 | tee gcp.project.region
 
