@@ -182,9 +182,6 @@ terraform: capstan gcp-account.json
 	   && time terraform apply -var gcp_project_id=$(GCP_PROJECT) -var ssh_user=$(GCP_PROJECT) -auto-approve -refresh=true | tee -a /root/terraform.log
 
 clean.terraform:
-	if [[ -d /root/capstan/gcp/terraform/ ]]; then \
-	   cd /root/capstan/gcp/terraform/ \
-	   && time terraform destroy -var gcp_project_id=$(GCP_PROJECT) -var ssh_user=$(GCP_PROJECT) 2>&1 > /dev/null; else :; fi
 	rm -Rf /root/.terraform.d /root/capstan/gcp/terraform/.terraform.d terraform.log
 
 ###
@@ -203,12 +200,12 @@ clean.gcp-account.json:
 gcloud.test: gcloud.test.setup gcloud.test.ssh
 
 gcloud.test.ssh:
-	echo 'uname -a' | gcloud compute --project "$(GCP_PROJECT)" ssh --zone "$(GCP_ZONE)" "$(GCP_PROJECT)@$$(cat test-instance-name)"
+	echo 'uname -a' | gcloud compute --project "$(GCP_PROJECT)" ssh --zone "$$(cat gcp.project.zone)" "$(GCP_PROJECT)@$$(cat test-instance-name)"
 
 gcloud.test.setup: test-instance-name
 	gcloud compute instances create "$$(cat test-instance-name)" \
 	   --project "$(GCP_PROJECT)" \
-	   --zone "$(GCP_ZONE)" \
+	   --zone "$$(cat gcp.project.zone)" \
 	   --service-account=$(GCP_SERVICE_ACCOUNT)@$(GCP_PROJECT).iam.gserviceaccount.com
 	sleep 4
 
@@ -217,18 +214,26 @@ test-instance-name:
 
 clean.gcloud.test:
 	( [[ -f test-instance-name ]] && (gcloud compute instances list --filter="name=('$$(cat test-instance-name)')" ) || :; )
-	( [[ -f test-instance-name ]] && (gcloud compute instances delete --zone "$(GCP_ZONE)" "$$(cat test-instance-name)" ) || :; )
+	( [[ -f test-instance-name ]] && (echo Y | gcloud compute instances delete --zone "$$(cat gcp.project.zone)" "$$(cat test-instance-name)" ) || :; )
 	( [[ -f test-instance-name ]] && rm -Rf test-instance-name ) || :;
 	rm -Rf .ssh
 
 ###
 
-gcloud: gcp.project.name gcloud.auth gcp.project gcloud.services gcloud.service.account gcloud.service.account.role gcloud.service.account.key gcloud.info
+gcloud: gcp.project.name gcloud.auth gcp.project gcloud.services gcloud.service.account gcloud.service.account.role gcloud.service.account.key gcloud.zone.list gcloud.info
 
-clean.gcloud: clean.gcloud.service.account.key clean.gcp.project clean.gcloud.auth clean.gcp.project.name
+clean.gcloud: clean.gcloud.zone.list clean.gcloud.service.account.key clean.gcp.project clean.gcloud.auth clean.gcp.project.name
 
 gcloud.info:
 	gcloud info
+
+gcloud.zone.list:
+	if [[ ! -f gcp.zone.list ]]; then gcloud compute zones list | grep "$(GCP_ZONE)" | shuf | head -1 | tee gcp.zone.list; fi
+	cat gcp.zone.list | xargs | cut -d\  -f1 | tee gcp.project.zone
+	cat gcp.zone.list | xargs | cut -d\  -f2 | tee gcp.project.region
+
+clean.gcloud.zone.list:
+	rm -Rf gcp.zone.list gcp.project.zone gcp.project.region
 
 gcloud.service.account.key:
 	gcloud iam service-accounts keys create $(GCP_PROJECT).json --iam-account $(GCP_SERVICE_ACCOUNT)@$(GCP_PROJECT).iam.gserviceaccount.com
@@ -274,7 +279,7 @@ gcp.project:
 	time gcloud config set billing/quota_project $(GCP_PROJECT)
 
 clean.gcp.project:
-	time gcloud projects delete $(GCP_PROJECT) || :;
+	if [[ -f gcp.project.name ]]; then echo Y | time gcloud projects delete $(GCP_PROJECT); else :; fi
 
 gcloud.auth:
 	time gcloud auth login "$(GCP_ACCOUNT)"
